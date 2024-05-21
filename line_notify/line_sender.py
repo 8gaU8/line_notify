@@ -1,16 +1,19 @@
+import json
 from os.path import expanduser
 from pathlib import Path
-import json
+from typing import Optional
 
 import requests
 
 
 class LineSender:
-    def __init__(self):
-        self._check_config()
-        self._set_token()
+    def __init__(self, token: Optional[str] = None):
+        if token is None:
+            token = self._load_token()
+        self.header = {"authorization": f"Bearer {token}"}
+        self.url = "https://notify-api.line.me/api/notify"
 
-    def _check_config(self):
+    def _load_token(self) -> str:
         home_dir = Path(expanduser("~"))
         config_dir = home_dir / ".config/line_notify"
         self.config_file = config_dir / ("token.json")
@@ -18,12 +21,9 @@ class LineSender:
             raise FileNotFoundError(
                 f"config file must be placed at {str(self.config_file)}"
             )
-
-    def _set_token(self):
         with open(self.config_file) as f:
             json_dict = json.load(f)
-        self.header = {"authorization": f"Bearer {json_dict['token']}"}
-        self.url = "https://notify-api.line.me/api/notify"
+        return json_dict["token"]
 
     def send(self, text: str):
         return self._send_text(text)
