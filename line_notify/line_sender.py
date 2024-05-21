@@ -1,4 +1,5 @@
 import json
+import os
 from os.path import expanduser
 from pathlib import Path
 from typing import Optional
@@ -17,13 +18,12 @@ class LineSender:
         home_dir = Path(expanduser("~"))
         config_dir = home_dir / ".config/line_notify"
         self.config_file = config_dir / ("token.json")
-        if not self.config_file.exists():
-            raise FileNotFoundError(
-                f"config file must be placed at {str(self.config_file)}"
-            )
-        with open(self.config_file) as f:
-            json_dict = json.load(f)
-        return json_dict["token"]
+        if self.config_file.exists():
+            with open(self.config_file) as f:
+                json_dict = json.load(f)
+            return json_dict["token"]
+
+        return os.getenv("LINE_TOKEN")
 
     def send(self, text: str):
         return self._send_text(text)
