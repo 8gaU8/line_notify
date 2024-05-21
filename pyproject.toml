@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "line-notify"
-version = "0.1.0"
+version = "0.2.0"
 description = ""
 authors = ["8gaU8 <haga.yuya2.2016@gmail.com>"]
 readme = "README.md"
